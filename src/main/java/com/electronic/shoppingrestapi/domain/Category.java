@@ -21,8 +21,7 @@ public class Category extends BaseEntity{
     @Lob
     private Byte[] image;
 
-    @OneToMany
-    @JoinColumn(name = "category")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     @JsonIgnoreProperties
     private List<Product> products = new ArrayList<>();
 }
