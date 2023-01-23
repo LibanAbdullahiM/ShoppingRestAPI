@@ -22,6 +22,6 @@ public class Category extends BaseEntity{
     private Byte[] image;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    @JsonIgnoreProperties
+    @JsonIgnoreProperties("category")
     private List<Product> products = new ArrayList<>();
 }

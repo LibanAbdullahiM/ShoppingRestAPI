@@ -28,6 +28,6 @@ public class Product extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    @JsonIgnoreProperties
+    @JsonIgnoreProperties("products")
     private Category category;
 }
