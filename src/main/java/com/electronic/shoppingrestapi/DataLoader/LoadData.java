@@ -1,29 +1,93 @@
 package com.electronic.shoppingrestapi.DataLoader;
 
-import com.electronic.shoppingrestapi.domain.Category;
-import com.electronic.shoppingrestapi.domain.Product;
-import com.electronic.shoppingrestapi.repositories.CategoryRepository;
-import com.electronic.shoppingrestapi.repositories.ProductRepository;
+import com.electronic.shoppingrestapi.domain.*;
+import com.electronic.shoppingrestapi.repositories.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 public class LoadData implements CommandLineRunner {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public LoadData(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public LoadData(ProductRepository productRepository, CategoryRepository categoryRepository,
+                    UserRepository userRepository, RoleRepository roleRepository,
+                    PrivilegeRepository privilegeRepository, PasswordEncoder passwordEncoder) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.privilegeRepository = privilegeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        loadUserDetails();
         loadData();
     }
 
-    public void loadData(){
+    private void loadUserDetails(){
+        System.out.println("Load User Data!");
+
+        User liban = new User();
+        liban.setFirstName("liban");
+        liban.setLastName("Abdullahi");
+        liban.setUserName("liban");
+        liban.setEmail("libanr4243@gmail.com");
+        liban.setPassword(passwordEncoder.encode("liban123"));
+
+        User customer_user = new User();
+        customer_user.setFirstName("Customer name");
+        customer_user.setLastName("Customer last name");
+        customer_user.setUserName("customer");
+        customer_user.setEmail("customer@gmail.com");
+        customer_user.setPassword(passwordEncoder.encode("customer123"));
+
+        userRepository.save(liban);
+        userRepository.save(customer_user);
+
+        Privilege product_read = new Privilege();
+        product_read.setPrivilege("PRODUCT_READ");
+
+        Privilege product_write = new Privilege();
+        product_write.setPrivilege("PRODUCT_WRITE");
+
+        Role customer_role = new Role();
+        customer_role.setRole("CUSTOMER");
+        customer_role.getUsers().add(customer_user);
+        customer_role.setPrivileges(Arrays.asList(product_read));
+        customer_user.setRoles(Arrays.asList(customer_role));
+
+        Role admin_role = new Role();
+        admin_role.setRole("ADMIN");
+        admin_role.setUsers(Arrays.asList(liban));
+        admin_role.setPrivileges(Arrays.asList(product_read, product_write));
+        liban.setRoles(Arrays.asList(admin_role));
+
+        privilegeRepository.save(product_write);
+        privilegeRepository.save(product_read);
+
+        roleRepository.save(customer_role);
+        roleRepository.save(admin_role);
+
+        userRepository.save(liban);
+        userRepository.save(customer_user);
+
+        System.out.println("Count Loaded Users: " + userRepository.count());
+        System.out.println("Count Loaded Privileges: " + privilegeRepository.count());
+        System.out.println("Count Loaded Roles: " + roleRepository.count());
+    }
+
+    private void loadData(){
         Category smart_phones = new Category();
         smart_phones.setName("Smart Phones");
 
