@@ -1,5 +1,6 @@
 package com.electronic.shoppingrestapi.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,6 @@ public class ShoppingCart extends BaseEntity{
     @ManyToOne
     private Product product;
 
-    //@ManyToOne
-    // private User user;
+    @ManyToOne
+    private User user;
 }

@@ -17,22 +17,27 @@ public class LoadData implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ShoppingCartRepository cartRepository;
 
     public LoadData(ProductRepository productRepository, CategoryRepository categoryRepository,
                     UserRepository userRepository, RoleRepository roleRepository,
-                    PrivilegeRepository privilegeRepository, PasswordEncoder passwordEncoder) {
+                    PrivilegeRepository privilegeRepository, PasswordEncoder passwordEncoder,
+                    ShoppingCartRepository cartRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
         this.passwordEncoder = passwordEncoder;
+
+        this.cartRepository = cartRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         loadUserDetails();
         loadData();
+        loadCartsData();
     }
 
     private void loadUserDetails(){
@@ -183,5 +188,25 @@ public class LoadData implements CommandLineRunner {
         System.out.println("Loaded Categories: " + categoryRepository.count());
         System.out.println("Loaded Products: " + productRepository.count());
 
+    }
+
+    private void loadCartsData(){
+
+        ShoppingCart cart1 = new ShoppingCart();
+        cart1.setProduct(productRepository.findById(1L).get());
+        cart1.setUser(userRepository.findByUserName("liban"));
+        cart1.setQuantity(1);
+        cart1.setSubtotalPrice(productRepository.findById(1L).get().getPrice());
+
+        ShoppingCart cart2 = new ShoppingCart();
+        cart2.setProduct(productRepository.findById(2L).get());
+        cart2.setUser(userRepository.findByUserName("liban"));
+        cart2.setQuantity(1);
+        cart2.setSubtotalPrice(productRepository.findById(2L).get().getPrice());
+
+        cartRepository.save(cart1);
+        cartRepository.save(cart2);
+
+        System.out.println("Count Loaded Carts: " + cartRepository.count());
     }
 }

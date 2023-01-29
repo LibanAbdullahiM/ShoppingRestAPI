@@ -1,14 +1,15 @@
 package com.electronic.shoppingrestapi.services;
 
 import com.electronic.shoppingrestapi.domain.Role;
+import com.electronic.shoppingrestapi.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleRepositoryImpl implements RoleRepository {
+public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
 
-    public RoleRepositoryImpl(RoleRepository roleRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
