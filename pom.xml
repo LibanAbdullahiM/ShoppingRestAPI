@@ -54,6 +54,16 @@
             <artifactId>hibernate-validator-annotation-processor</artifactId>
         </dependency>
 
+        <!--
+          Docs: http://localhost:8080/v3/api-docs //By adin in application.properties file: spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER
+          Swagger-ui: http://localhost:8080/swagger-ui/index.html
+          -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
