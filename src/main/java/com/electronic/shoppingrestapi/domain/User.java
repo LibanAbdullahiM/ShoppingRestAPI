@@ -14,13 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends Person {
 
-    private String firstName;
-    private String lastName;
-    private String email;
     private String userName;
     private String password;
+
+    @OneToOne
+    private Customer customer;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),

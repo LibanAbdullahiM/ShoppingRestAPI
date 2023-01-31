@@ -1,6 +1,7 @@
 package com.electronic.shoppingrestapi.domain;
 
 import com.electronic.shoppingrestapi.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,8 @@ public class Order extends BaseEntity{
     inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products = new ArrayList<>();
 
-   // @ManyToOne
-    //@JoinColumn(name = "customer_id")
-    //private Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonIgnoreProperties("orders")
+    private Customer customer;
 }
