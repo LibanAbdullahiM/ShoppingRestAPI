@@ -68,13 +68,13 @@ public class LoadData implements CommandLineRunner {
 
         Role customer_role = new Role();
         customer_role.setRole("CUSTOMER");
-        customer_role.getUsers().add(customer_user);
+        //customer_role.getUsers().add(customer_user);
         customer_role.setPrivileges(Arrays.asList(product_read));
         customer_user.setRoles(Arrays.asList(customer_role));
 
         Role admin_role = new Role();
         admin_role.setRole("ADMIN");
-        admin_role.setUsers(Arrays.asList(liban));
+        //admin_role.setUsers(Arrays.asList(liban));
         admin_role.setPrivileges(Arrays.asList(product_read, product_write));
         liban.setRoles(Arrays.asList(admin_role));
 
