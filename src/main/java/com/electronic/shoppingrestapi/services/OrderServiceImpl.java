@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getOrdersByCustomer(Customer customer) {
-        return orderRepository.findOrdersByCustomer(customer);
+        return customer.getOrders();
     }
 
     @Override
@@ -74,8 +74,10 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(totalPrice);
         order.setCustomer(customer);
 
-        Customer savedCustomer = customerRepository.save(customer);
+        customer.getOrders().add(order);
+
         Order savedOrder = orderRepository.save(order);
+        Customer savedCustomer = customerRepository.save(customer);
 
         return savedOrder;
     }

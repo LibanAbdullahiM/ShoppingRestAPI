@@ -9,6 +9,7 @@ import com.electronic.shoppingrestapi.repositories.CustomerRepository;
 import com.electronic.shoppingrestapi.repositories.UserRepository;
 import com.electronic.shoppingrestapi.services.OrderService;
 import com.electronic.shoppingrestapi.services.ShoppingCartService;
+import com.electronic.shoppingrestapi.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +25,18 @@ public class OrderController {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final ShoppingCartService shoppingCartService;
+    private final UserService userService;
 
     public OrderController(OrderService orderService,
                            UserRepository userRepository,
                            CustomerRepository customerRepository,
-                           ShoppingCartService shoppingCartService) {
+                           ShoppingCartService shoppingCartService,
+                           UserService userService) {
         this.orderService = orderService;
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.shoppingCartService = shoppingCartService;
+        this.userService = userService;
     }
 
     @GetMapping("/orders")
@@ -44,19 +48,13 @@ public class OrderController {
     @GetMapping("/customer/orders")
     @ResponseStatus(HttpStatus.OK)
     public List<Order> getOrdersByCustomer(@AuthenticationPrincipal UserPrincipals userPrincipals){
-        if(userPrincipals == null){
-            try {
-                throw new UserPrincipalNotFoundException("User not found!");
-            } catch (UserPrincipalNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
 
-        User user = userPrincipals.getUser();
+        User user = userService.getCurrentlyLoggedUser(userPrincipals);
         return orderService.getOrdersByCustomer(user.getCustomer());
     }
 
     @GetMapping("/orders/order")
+    @ResponseStatus(HttpStatus.OK)
     public Order getOrderByOrderNumber(@RequestBody String orderNumber){
 
         return orderService.getOrderByOrderNumber(orderNumber);
@@ -66,17 +64,10 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public Order saveOrder(@RequestBody Customer customer,
                            @AuthenticationPrincipal UserPrincipals userPrincipals){
-        if(userPrincipals == null){
-            try {
-                throw new UserPrincipalNotFoundException("User not found!");
-            } catch (UserPrincipalNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
 
-        User user = userPrincipals.getUser();
+        User user = userService.getCurrentlyLoggedUser(userPrincipals);
+
         Customer savedCustomer = customerRepository.save(customer);
-
         user.setCustomer(customer);
         savedCustomer.setUser(user);
 
