@@ -20,6 +20,7 @@ public class User extends Person {
     private String password;
 
     @OneToOne
+    @JsonIgnoreProperties("user")
     private Customer customer;
 
     @ManyToMany(fetch = FetchType.EAGER)

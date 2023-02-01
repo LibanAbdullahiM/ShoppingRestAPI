@@ -22,6 +22,7 @@ public class Customer extends Person {
     private int zipcode;
 
     @OneToOne
+    @JsonIgnoreProperties("customer")
     private User user;
 
     @OneToMany(mappedBy = "customer")
