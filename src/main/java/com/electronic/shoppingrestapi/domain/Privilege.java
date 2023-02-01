@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Privilege extends BaseEntity {
 
     private String privilege;
 
-    @ManyToMany(mappedBy = "privileges")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "privileges")
     @JsonIgnoreProperties("privileges")
     private List<Role> roles = new ArrayList<>();
 }
