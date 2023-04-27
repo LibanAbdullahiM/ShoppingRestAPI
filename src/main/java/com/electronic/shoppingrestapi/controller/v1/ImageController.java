@@ -1,6 +1,7 @@
 package com.electronic.shoppingrestapi.controller.v1;
 
 import com.electronic.shoppingrestapi.domain.Category;
+import com.electronic.shoppingrestapi.domain.Image;
 import com.electronic.shoppingrestapi.domain.Product;
 import com.electronic.shoppingrestapi.services.CategoryService;
 import com.electronic.shoppingrestapi.services.ImageService;
@@ -32,15 +33,15 @@ public class ImageController {
         imageService.uploadProductImage(productId, file);
     }
 
-    @GetMapping("/products/{productId}/image")
+    @GetMapping("/products/{productId}/image/{imageIndex}")
     @ResponseStatus(HttpStatus.OK)
     public void renderProductImage(@PathVariable("productId") Long productId,
+                                   @PathVariable("imageIndex") int imageIndex,
                                    HttpServletResponse response) throws IOException {
 
         Product product = productService.getProductById(productId);
 
-        renderImage(response, product.getImage());
-
+        renderImage(response, product.getImages().get(imageIndex).getImage());
     }
 
     @PostMapping("/categories/{id}/uploadImage")
@@ -59,6 +60,7 @@ public class ImageController {
     }
 
     private void renderImage(HttpServletResponse response, Byte[] image) throws IOException {
+
         if(image != null){
             byte[] byteArray = new byte[image.length];
 
@@ -73,5 +75,6 @@ public class ImageController {
             InputStream is = new ByteArrayInputStream(byteArray);
             IOUtils.copy(is, response.getOutputStream());
         }
+
     }
 }

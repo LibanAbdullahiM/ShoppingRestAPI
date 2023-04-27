@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,8 +25,12 @@ public class Product extends BaseEntity {
     private float price;
     private int inStock;
 
-    @Lob
-    private Byte[] image;
+    //@Lob
+    //private Byte[] image;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @JsonIgnoreProperties("product")
+    private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "category_id")

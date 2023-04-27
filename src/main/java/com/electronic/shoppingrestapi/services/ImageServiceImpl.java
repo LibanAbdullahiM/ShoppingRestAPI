@@ -1,8 +1,10 @@
 package com.electronic.shoppingrestapi.services;
 
 import com.electronic.shoppingrestapi.domain.Category;
+import com.electronic.shoppingrestapi.domain.Image;
 import com.electronic.shoppingrestapi.domain.Product;
 import com.electronic.shoppingrestapi.repositories.CategoryRepository;
+import com.electronic.shoppingrestapi.repositories.ImageRepository;
 import com.electronic.shoppingrestapi.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +18,14 @@ public class ImageServiceImpl implements ImageService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
 
     public ImageServiceImpl(ProductRepository productRepository,
-                            CategoryRepository categoryRepository) {
+                            CategoryRepository categoryRepository,
+                            ImageRepository imageRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -35,8 +40,16 @@ public class ImageServiceImpl implements ImageService {
 
         Byte[] fileByteObject = convertToBytObject(file);
 
+        Image image = new Image();
 
-        product.setImage(fileByteObject);
+        image.setImage(fileByteObject);
+
+        Image savedImage = imageRepository.save(image);
+
+        savedImage.setProduct(product);
+        product.getImages().add(savedImage);
+
+        //product.setImage(fileByteObject);
 
         productRepository.save(product);
 
