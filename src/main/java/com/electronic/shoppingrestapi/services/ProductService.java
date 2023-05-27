@@ -10,6 +10,8 @@ public interface ProductService {
 
     Product getProductById(Long id);
 
+    List<Product> findProducts(String name);
+
     Product createNewProduct(Product product);
 
     Product updateProduct(Long id, Product product);

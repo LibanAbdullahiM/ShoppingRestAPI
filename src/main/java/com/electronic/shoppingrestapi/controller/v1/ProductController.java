@@ -29,6 +29,13 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
+    @PostMapping("/find")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Product> findProducts(@RequestBody String str){
+
+        return productService.findProducts(str.toLowerCase());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Product createNewProduct(@RequestBody Product product){
