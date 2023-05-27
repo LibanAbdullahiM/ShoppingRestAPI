@@ -4,6 +4,7 @@ import com.electronic.shoppingrestapi.auth.UserDetailsServiceImple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -52,6 +53,13 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/static/**").permitAll()
                 .antMatchers("/h2-console/").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/api/v1/register").permitAll()
+                .antMatchers("/api/v1/user").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/products").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/products/find").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

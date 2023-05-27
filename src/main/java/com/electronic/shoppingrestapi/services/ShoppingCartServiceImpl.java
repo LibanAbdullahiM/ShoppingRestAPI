@@ -7,6 +7,7 @@ import com.electronic.shoppingrestapi.repositories.ProductRepository;
 import com.electronic.shoppingrestapi.repositories.ShoppingCartRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,24 +25,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public List<ShoppingCart> getAllCartsByUser(User user) {
-        return shoppingCartRepository.findShoppingCartByUser(user);
+        return  shoppingCartRepository.findShoppingCartByUser(user);
     }
 
     @Override
-    public ShoppingCart addToCart(Long id, User user) {
+    public boolean addToCart(Long productId, User user) {
 
         List<ShoppingCart> shoppingCarts = getAllCartsByUser(user);
 
         Optional<ShoppingCart> cartOptional = shoppingCarts.stream()
-                .filter(cart -> cart.getProduct().getId().equals(id)).findFirst();
+                .filter(cart -> cart.getProduct().getId().equals(productId)).findFirst();
 
         if(cartOptional.isPresent()){
             ShoppingCart foundedCartObj = cartOptional.get();
             updateCartItem(foundedCartObj.getId(), user);
-            return foundedCartObj;
+            return true;
         }
 
-        Optional<Product> optionalProduct = productRepository.findById(id);
+        Optional<Product> optionalProduct = productRepository.findById(productId);
 
         if(optionalProduct.isEmpty()){
             throw new RuntimeException("The product does not exists!");
@@ -55,7 +56,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         newShoppingCart.setQuantity(1);
         newShoppingCart.setSubtotalPrice(product.getPrice());
 
-        return shoppingCartRepository.save(newShoppingCart);
+        return shoppingCartRepository.save(newShoppingCart) != null;
     }
 
     @Override
@@ -63,24 +64,29 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<ShoppingCart> carts = getAllCartsByUser(user);
 
         Optional<ShoppingCart> cartOptional = carts.stream()
-                .filter(cart -> cart.getProduct().getId().equals(id)).findFirst();
+                .filter(cart -> cart.getId().equals(id)).findFirst();
 
         if(cartOptional.isPresent()){
             ShoppingCart cart = cartOptional.get();
+            System.out.println(cart);
 
-            cart.setQuantity(cart.getQuantity() + 1);
-            cart.setSubtotalPrice(cart.getProduct().getPrice() * cart.getQuantity());
+            Product product = productRepository.findById(cart.getProduct().getId()).get();
+            if(cart.getQuantity() < product.getInStock()){
 
-            shoppingCartRepository.save(cart);
+                cart.setQuantity(cart.getQuantity() + 1);
+                cart.setSubtotalPrice(cart.getProduct().getPrice() * cart.getQuantity());
+
+                shoppingCartRepository.save(cart);
+            }
         }
     }
 
     @Override
-    public void deleteItem(Long id, User user) {
+    public void deleteItem(Long cartId, User user) {
         List<ShoppingCart> carts = getAllCartsByUser(user);
 
         Optional<ShoppingCart> cartOptional = carts.stream()
-                .filter(cart -> cart.getProduct().getId().equals(id)).findFirst();
+                .filter(cart -> cart.getId().equals(cartId)).findFirst();
 
         if(cartOptional.isPresent()){
             ShoppingCart cart = cartOptional.get();
@@ -97,20 +103,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void deleteCartObject(Long id, User user) {
+    public void deleteCartObject(Long cartId, User user) {
 
         List<ShoppingCart> carts = getAllCartsByUser(user);
 
         Optional<ShoppingCart> cartOptional = carts.stream()
-                .filter(cart -> cart.getProduct().getId().equals(id)).findFirst();
+                .filter(cart -> cart.getId().equals(cartId)).findFirst();
 
         if(cartOptional.isPresent()){
             ShoppingCart cart = cartOptional.get();
 
-            carts.remove(cart);
-            shoppingCartRepository.saveAll(carts);
+            //carts.remove(cart);
+            //shoppingCartRepository.saveAll(carts);
 
-            //shoppingCartRepository.delete(cart);
+            shoppingCartRepository.delete(cart);
         }
     }
 

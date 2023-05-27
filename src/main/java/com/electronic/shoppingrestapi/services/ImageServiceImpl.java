@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +27,11 @@ public class ImageServiceImpl implements ImageService {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+    }
+
+    @Override
+    public Image findImageById(Long imageId) {
+        return imageRepository.findById(imageId).orElse(null);
     }
 
     @Override

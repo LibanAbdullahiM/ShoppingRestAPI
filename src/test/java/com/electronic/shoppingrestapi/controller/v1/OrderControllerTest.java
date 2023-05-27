@@ -141,7 +141,7 @@ public class OrderControllerTest {
         when(userService.getCurrentlyLoggedUser(any())).thenReturn(user);
         when(customerRepository.save(any())).thenReturn(customer);
         when(cartService.getAllCartsByUser(any())).thenReturn(carts);
-        when(orderService.saveOrder(any(), anyList())).thenReturn(order);
+        when(orderService.saveOrder(any(), anyList())).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)

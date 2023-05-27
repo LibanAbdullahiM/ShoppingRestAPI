@@ -14,5 +14,5 @@ public interface OrderService {
 
     Order getOrderByOrderNumber(String orderNumber);
 
-    Order saveOrder(Customer customer, List<ShoppingCart> shoppingCartList);
+    boolean saveOrder(Customer customer, List<ShoppingCart> shoppingCartList);
 }

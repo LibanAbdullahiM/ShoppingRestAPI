@@ -96,7 +96,7 @@ public class ShoppingCartControllerTest {
         cart.setQuantity(1);
         cart.setSubtotalPrice(product.getPrice());
 
-        when(shoppingCartService.addToCart(anyLong(), any())).thenReturn(cart);
+        when(shoppingCartService.addToCart(anyLong(), any())).thenReturn(true);
         when(userService.getCurrentlyLoggedUser(any())).thenReturn(user);
 
         mockMvc.perform(post("/api/v1/shopping-carts/"+product.getId())

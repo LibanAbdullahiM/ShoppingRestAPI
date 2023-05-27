@@ -7,8 +7,11 @@ import com.electronic.shoppingrestapi.repositories.ProductRepository;
 import com.electronic.shoppingrestapi.services.CategoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.electronic.shoppingrestapi.services.ProductServiceImpl.getProducts;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -21,18 +24,44 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+
+        List<Category> categoryList = categoryRepository.findAll();
+
+        Category category = null;
+        List<Category> newList = new ArrayList<>();
+
+        for(Category cat : categoryList){
+
+            category = new Category();
+
+            category.setId(cat.getId());
+            category.setName(cat.getName());
+
+            newList.add(category);
+        }
+
+        return newList;
     }
 
     @Override
     public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+
+        Category foundedCategory = categoryRepository.findById(id).orElse(null);
+
+        Category category = new Category();
+
+        assert foundedCategory != null;
+        category.setId(foundedCategory.getId());
+        category.setName(foundedCategory.getName());
+
+        return foundedCategory;
     }
 
     @Override
     public List<Product> getAllProductsByCategory(Long id) {
 
         Optional<Category> optionalCategory = categoryRepository.findById(id);
+
         if(!optionalCategory.isPresent()){
             throw new RuntimeException("Category with id " + id + " Not Found!");
         }
@@ -41,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<Product> products = category.getProducts();
 
-        return products;
+        return getProducts(products);
     }
 
     @Override

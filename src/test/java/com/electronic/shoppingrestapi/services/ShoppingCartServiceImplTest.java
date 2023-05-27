@@ -90,11 +90,11 @@ public class ShoppingCartServiceImplTest {
         when(cartRepository.save(any())).thenReturn(cart);
 
         //WHEN
-        ShoppingCart addedCart = cartService.addToCart(2L, user);
+        boolean addedCart = cartService.addToCart(2L, user);
 
         //THEN
         assertNotNull(addedCart);
-        assertEquals(product, addedCart.getProduct());
+        assertTrue(addedCart);
         verify(cartRepository, times(1)).findShoppingCartByUser(user);
         verify(productRepository, times(1)).findById(anyLong());
         verify(cartRepository, times(1)).save(any());

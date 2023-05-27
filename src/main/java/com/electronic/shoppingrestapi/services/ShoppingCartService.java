@@ -9,7 +9,7 @@ public interface ShoppingCartService {
 
     List<ShoppingCart> getAllCartsByUser(User user);
 
-    ShoppingCart addToCart(Long id, User user);
+    boolean addToCart(Long id, User user);
 
     void updateCartItem(Long id, User user);
 

@@ -45,7 +45,7 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-    @GetMapping("/customer/orders")
+    @PostMapping("/customer/orders")
     @ResponseStatus(HttpStatus.OK)
     public List<Order> getOrdersByCustomer(@AuthenticationPrincipal UserPrincipals userPrincipals){
 
@@ -62,7 +62,7 @@ public class OrderController {
 
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
-    public Order saveOrder(@RequestBody Customer customer,
+    public boolean saveOrder(@RequestBody Customer customer,
                            @AuthenticationPrincipal UserPrincipals userPrincipals){
 
         User user = userService.getCurrentlyLoggedUser(userPrincipals);

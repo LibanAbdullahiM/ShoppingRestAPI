@@ -1,15 +1,16 @@
 package com.electronic.shoppingrestapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -30,10 +31,35 @@ public class Product extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     @JsonIgnoreProperties("product")
+    @ToString.Exclude
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnoreProperties("products")
     private Category category;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Product product = (Product) o;
+        return getId() != null && Objects.equals(getId(), product.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", brand='" + brand + '\'' +
+                ", price=" + price +
+                ", inStock=" + inStock +
+                '}';
+    }
 }

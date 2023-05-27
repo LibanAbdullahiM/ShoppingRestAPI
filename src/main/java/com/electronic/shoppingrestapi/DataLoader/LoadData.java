@@ -41,7 +41,7 @@ public class LoadData implements CommandLineRunner {
     }
 
     private void loadUserDetails(){
-        System.out.println("Load User Data!");
+        //System.out.println("Load User Data!");
 
         User liban = new User();
         liban.setFirstName("liban");
@@ -57,8 +57,8 @@ public class LoadData implements CommandLineRunner {
         customer_user.setEmail("customer@gmail.com");
         customer_user.setPassword(passwordEncoder.encode("customer123"));
 
-        userRepository.save(liban);
-        userRepository.save(customer_user);
+        //userRepository.save(liban);
+        //userRepository.save(customer_user);
 
         Privilege product_read = new Privilege();
         product_read.setPrivilege("PRODUCT_READ");
@@ -77,9 +77,9 @@ public class LoadData implements CommandLineRunner {
         //admin_role.setUsers(Arrays.asList(liban));
         admin_role.setPrivileges(Arrays.asList(product_read, product_write));
         liban.setRoles(Arrays.asList(admin_role));
-
-        privilegeRepository.save(product_write);
-        privilegeRepository.save(product_read);
+/*
+       privilegeRepository.save(product_write);
+       privilegeRepository.save(product_read);
 
         roleRepository.save(customer_role);
         roleRepository.save(admin_role);
@@ -89,7 +89,7 @@ public class LoadData implements CommandLineRunner {
 
         System.out.println("Count Loaded Users: " + userRepository.count());
         System.out.println("Count Loaded Privileges: " + privilegeRepository.count());
-        System.out.println("Count Loaded Roles: " + roleRepository.count());
+        System.out.println("Count Loaded Roles: " + roleRepository.count());*/
     }
 
     private void loadData(){
@@ -160,7 +160,7 @@ public class LoadData implements CommandLineRunner {
         microsoftXbox.setDescription("30 sports and fitness modes of operations;" +
                 "PPG sensor for tracking changes in heart rate;" +
                 "monitoring of blood oxygen level measurmenet (SpO2 indicator).");
-
+/*
         //Give Categories their products:
         smart_watches.getProducts().add(bracelets);
         smart_watches.getProducts().add(bracelets2);
@@ -186,13 +186,13 @@ public class LoadData implements CommandLineRunner {
         categoryRepository.save(cameras);
 
         System.out.println("Loaded Categories: " + categoryRepository.count());
-        System.out.println("Loaded Products: " + productRepository.count());
+        System.out.println("Loaded Products: " + productRepository.count());*/
 
     }
 
     private void loadCartsData(){
 
-        ShoppingCart cart1 = new ShoppingCart();
+/*        ShoppingCart cart1 = new ShoppingCart();
         cart1.setProduct(productRepository.findById(1L).get());
         cart1.setUser(userRepository.findByUserName("liban"));
         cart1.setQuantity(1);
@@ -207,6 +207,6 @@ public class LoadData implements CommandLineRunner {
         cartRepository.save(cart1);
         cartRepository.save(cart2);
 
-        System.out.println("Count Loaded Carts: " + cartRepository.count());
+        System.out.println("Count Loaded Carts: " + cartRepository.count());*/
     }
 }

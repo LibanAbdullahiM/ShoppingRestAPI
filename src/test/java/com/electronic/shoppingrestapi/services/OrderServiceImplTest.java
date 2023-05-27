@@ -3,15 +3,15 @@ package com.electronic.shoppingrestapi.services;
 import com.electronic.shoppingrestapi.domain.Customer;
 import com.electronic.shoppingrestapi.domain.Order;
 import com.electronic.shoppingrestapi.domain.ShoppingCart;
-import com.electronic.shoppingrestapi.domain.User;
 import com.electronic.shoppingrestapi.repositories.CustomerRepository;
 import com.electronic.shoppingrestapi.repositories.OrderRepository;
+import com.electronic.shoppingrestapi.repositories.ProductRepository;
+import com.electronic.shoppingrestapi.repositories.ShoppingCartRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,11 +28,17 @@ public class OrderServiceImplTest {
     @Mock
     CustomerRepository customerRepository;
 
+    @Mock
+    ShoppingCartRepository cartRepository;
+
+    @Mock
+    ProductRepository productRepository;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
 
-        orderService = new OrderServiceImpl(orderRepository, customerRepository);
+        orderService = new OrderServiceImpl(orderRepository, customerRepository, cartRepository, productRepository);
     }
 
     @Test
