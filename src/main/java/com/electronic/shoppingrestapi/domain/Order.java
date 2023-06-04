@@ -4,6 +4,8 @@ import com.electronic.shoppingrestapi.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,6 +15,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -29,6 +32,7 @@ public class Order extends BaseEntity{
     private OrderStatus orderStatus;
 
     @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinTable(name = "order_product", joinColumns = @JoinColumn(name = "order_id"),
     inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
@@ -38,6 +42,11 @@ public class Order extends BaseEntity{
     @JoinColumn(name = "customer_id")
     @JsonIgnoreProperties("orders")
     private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("orders")
+    private User user;
 
     @Override
     public boolean equals(Object o) {
@@ -52,14 +61,14 @@ public class Order extends BaseEntity{
         return getClass().hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderNumber='" + orderNumber + '\'' +
-                ", dateOrdered=" + dateOrdered +
-                ", quantities=" + quantities +
-                ", totalPrice=" + totalPrice +
-                ", orderStatus=" + orderStatus +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Order{" +
+//                "orderNumber='" + orderNumber + '\'' +
+//                ", dateOrdered=" + dateOrdered +
+//                ", quantities=" + quantities +
+//                ", totalPrice=" + totalPrice +
+//                ", orderStatus=" + orderStatus +
+//                '}';
+//    }
 }

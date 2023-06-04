@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.electronic.shoppingrestapi.services.UserServiceImpl.filterUserObject;
+
 @RestController
 @RequestMapping("/api/v1")
 public class SecurityController {
@@ -26,7 +28,7 @@ public class SecurityController {
     @ResponseStatus(HttpStatus.OK)
     private User login(@AuthenticationPrincipal UserPrincipals userPrincipals){
         User user = userService.getCurrentlyLoggedUser(userPrincipals);
-        return user;
+        return filterUserObject(user);
     }
 
     @PostMapping("/user")

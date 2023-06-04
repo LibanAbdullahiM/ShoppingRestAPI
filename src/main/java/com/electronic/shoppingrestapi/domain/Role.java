@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -36,12 +37,5 @@ public class Role extends BaseEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Role{" +
-                "role='" + role + '\'' +
-                '}';
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.electronic.shoppingrestapi.services.ProductServiceImpl.getFilteredProduct;
+
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
@@ -26,13 +28,14 @@ public class ProductController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Product getProductById(@PathVariable Long id){
-        return productService.getProductById(id);
+        Product product = productService.getProductById(id);
+
+        return getFilteredProduct(product);
     }
 
     @PostMapping("/find")
     @ResponseStatus(HttpStatus.OK)
     public List<Product> findProducts(@RequestBody String str){
-
         return productService.findProducts(str.toLowerCase());
     }
 

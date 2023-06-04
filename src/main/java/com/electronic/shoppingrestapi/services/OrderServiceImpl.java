@@ -1,21 +1,19 @@
 package com.electronic.shoppingrestapi.services;
 
-import com.electronic.shoppingrestapi.domain.Customer;
-import com.electronic.shoppingrestapi.domain.Order;
-import com.electronic.shoppingrestapi.domain.Product;
-import com.electronic.shoppingrestapi.domain.ShoppingCart;
+import com.electronic.shoppingrestapi.domain.*;
 import com.electronic.shoppingrestapi.enums.OrderStatus;
-import com.electronic.shoppingrestapi.repositories.CustomerRepository;
-import com.electronic.shoppingrestapi.repositories.OrderRepository;
-import com.electronic.shoppingrestapi.repositories.ProductRepository;
-import com.electronic.shoppingrestapi.repositories.ShoppingCartRepository;
+import com.electronic.shoppingrestapi.repositories.*;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+
+import static com.electronic.shoppingrestapi.services.ProductServiceImpl.getProducts;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -24,25 +22,32 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerRepository customerRepository;
     private final ShoppingCartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CustomerRepository customerRepository,
                             ShoppingCartRepository cartRepository,
-                            ProductRepository productRepository) {
+                            ProductRepository productRepository,
+                            UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+
+        List<Order> orderList = orderRepository.findAll();
+
+        return getFilteredOrders(orderList);
     }
 
-    @Override
-    public List<Order> getOrdersByCustomer(Customer customer) {
-        return customer.getOrders();
+    public List<Order> getOrdersByUser(User user) {
+
+        assert user != null;
+        return getFilteredOrders(user.getOrders());
     }
 
     @Override
@@ -51,7 +56,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean saveOrder(Customer customer, List<ShoppingCart> shoppingCartList) {
+    public Order getOrderById(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        Order order = null;
+        if(orderOptional.isPresent()){
+            order = orderOptional.get();
+        }
+        return getFilteredOrder(order);
+    }
+
+    @Transactional
+    @Override
+    public boolean saveOrder(User user, Customer customer, List<ShoppingCart> shoppingCartList) {
 
         if(shoppingCartList == null){
             throw new RuntimeException("You don.t have Shopping available on your Carts");
@@ -100,14 +116,68 @@ public class OrderServiceImpl implements OrderService {
         order.setQuantities(totalQuantity);
         order.setTotalPrice(totalPrice);
         order.setCustomer(customer);
+        order.setUser(user);
 
         customer.getOrders().add(order);
+        user.getOrders().add(order);
 
         Order savedOrder = orderRepository.save(order);
-        Customer savedCustomer = customerRepository.save(customer);
+        customerRepository.save(customer);
+        userRepository.save(user);
 
         cartRepository.deleteAll(shoppingCartList);
 
         return savedOrder != null;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        orderRepository.deleteById(id);
+    }
+
+    @Override
+    public void clearAllOrders() {
+        orderRepository.deleteAll();
+    }
+
+    public static List<Order> getFilteredOrders(List<Order> oldOrders){
+
+        List<Order> newOrderList = new ArrayList<>();
+
+        for(Order order : oldOrders){
+
+            newOrderList.add(getFilteredOrder(order));
+        }
+
+        return newOrderList;
+    }
+
+    public static Order getFilteredOrder(Order order){
+
+        Order newOrder = new Order();
+
+        newOrder.setId(order.getId());
+        newOrder.setOrderNumber(order.getOrderNumber());
+        newOrder.setDateOrdered(order.getDateOrdered());
+        newOrder.setQuantities(order.getQuantities());
+        newOrder.setTotalPrice(order.getTotalPrice());
+        newOrder.setOrderStatus(order.getOrderStatus());
+
+        Customer newCustomer = new Customer();
+        newCustomer.setId(order.getCustomer().getId());
+        newCustomer.setFirstName(order.getCustomer().getFirstName());
+        newCustomer.setLastName(order.getCustomer().getLastName());
+        newCustomer.setAddress(order.getCustomer().getAddress());
+        newCustomer.setCountry(order.getCustomer().getCountry());
+        newCustomer.setCity(order.getCustomer().getCity());
+        newCustomer.setZipcode(order.getCustomer().getZipcode());
+        newCustomer.setEmail(order.getCustomer().getEmail());
+        newCustomer.setPhoneNumber(order.getCustomer().getPhoneNumber());
+
+        newOrder.setCustomer(newCustomer);
+        newOrder.setProducts(getProducts(order.getProducts()));
+
+        return newOrder;
+
     }
 }

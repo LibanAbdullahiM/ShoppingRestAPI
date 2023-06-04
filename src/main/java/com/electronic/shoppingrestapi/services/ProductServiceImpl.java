@@ -28,10 +28,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(Long id) {
-        Product oldProduct = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
 
-        assert oldProduct != null;
-        return getFilteredProduct(oldProduct);
+        assert product != null;
+        return product;
     }
 
     @Override
@@ -45,12 +45,11 @@ public class ProductServiceImpl implements ProductService {
         else if(CollectionUtils.isEmpty(products)){
             products = productRepository.findByBrandLike(str);
         }
-        System.out.println("My Method");
-        System.out.println(products);
+
         return getProducts(products);
     }
 
-    static List<Product> getProducts(List<Product> products) {
+    public static List<Product> getProducts(List<Product> products) {
 
         List<Product> newListProducts = new ArrayList<>();
 
@@ -62,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
         return newListProducts;
     }
 
-    static Product getFilteredProduct(Product oldProduct){
+    public static Product getFilteredProduct(Product oldProduct){
 
         Product newProduct = new Product();
 

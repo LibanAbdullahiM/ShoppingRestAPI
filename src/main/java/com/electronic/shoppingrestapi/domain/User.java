@@ -3,6 +3,10 @@ package com.electronic.shoppingrestapi.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,6 +16,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -23,11 +28,12 @@ public class User extends Person {
 
     private LocalDate regDate;
 
-    @OneToOne
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("user")
-    private Customer customer;
+    private List<Order> orders = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
@@ -45,12 +51,12 @@ public class User extends Person {
         return getClass().hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", regDate=" + regDate +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "userName='" + userName + '\'' +
+//                ", password='" + password + '\'' +
+//                ", regDate=" + regDate +
+//                '}';
+//    }
 }

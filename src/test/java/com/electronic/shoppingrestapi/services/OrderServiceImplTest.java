@@ -3,10 +3,8 @@ package com.electronic.shoppingrestapi.services;
 import com.electronic.shoppingrestapi.domain.Customer;
 import com.electronic.shoppingrestapi.domain.Order;
 import com.electronic.shoppingrestapi.domain.ShoppingCart;
-import com.electronic.shoppingrestapi.repositories.CustomerRepository;
-import com.electronic.shoppingrestapi.repositories.OrderRepository;
-import com.electronic.shoppingrestapi.repositories.ProductRepository;
-import com.electronic.shoppingrestapi.repositories.ShoppingCartRepository;
+import com.electronic.shoppingrestapi.domain.User;
+import com.electronic.shoppingrestapi.repositories.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,11 +32,14 @@ public class OrderServiceImplTest {
     @Mock
     ProductRepository productRepository;
 
+    @Mock
+    UserRepository userRepository;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
 
-        orderService = new OrderServiceImpl(orderRepository, customerRepository, cartRepository, productRepository);
+        orderService = new OrderServiceImpl(orderRepository, customerRepository, cartRepository, productRepository, userRepository);
     }
 
     @Test
@@ -72,9 +73,13 @@ public class OrderServiceImplTest {
 
         customer.setOrders(Arrays.asList(order1, order2));
 
-        List<Order> ordersByCustomer = customer.getOrders();
+        User user = new User();
+        user.setId(1L);
+        user.setOrders(Arrays.asList(order1, order2));
 
-        List<Order> orders = orderService.getOrdersByCustomer(customer);
+        List<Order> ordersByUser = user.getOrders();
+
+        List<Order> orders = orderService.getOrdersByUser(user);
 
         assertNotNull(orders);
         assertEquals(2, orders.size());
@@ -101,11 +106,14 @@ public class OrderServiceImplTest {
         customer.setFirstName("Liban");
         customer.setLastName("Abdullahi");
 
+        User user = new User();
+        user.setId(1L);
+
         List<ShoppingCart> cartList = Arrays.asList(new ShoppingCart(), new ShoppingCart(), new ShoppingCart());
 
         when(customerRepository.save(any())).thenReturn(customer);
 
-        orderService.saveOrder(customer, cartList);
+        orderService.saveOrder(user, customer, cartList);
 
       assertEquals(1, customer.getOrders().size());
     }

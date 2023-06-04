@@ -5,8 +5,7 @@ import com.electronic.shoppingrestapi.domain.Customer;
 import com.electronic.shoppingrestapi.domain.Order;
 import com.electronic.shoppingrestapi.domain.ShoppingCart;
 import com.electronic.shoppingrestapi.domain.User;
-import com.electronic.shoppingrestapi.repositories.CustomerRepository;
-import com.electronic.shoppingrestapi.repositories.UserRepository;
+import com.electronic.shoppingrestapi.services.CustomerService;
 import com.electronic.shoppingrestapi.services.OrderService;
 import com.electronic.shoppingrestapi.services.ShoppingCartService;
 import com.electronic.shoppingrestapi.services.UserService;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
 
 @RestController
@@ -22,21 +20,19 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
     private final ShoppingCartService shoppingCartService;
     private final UserService userService;
+    private final CustomerService customerService;
 
     public OrderController(OrderService orderService,
-                           UserRepository userRepository,
-                           CustomerRepository customerRepository,
                            ShoppingCartService shoppingCartService,
-                           UserService userService) {
+                           UserService userService,
+                           CustomerService customerService) {
         this.orderService = orderService;
-        this.userRepository = userRepository;
-        this.customerRepository = customerRepository;
         this.shoppingCartService = shoppingCartService;
         this.userService = userService;
+
+        this.customerService = customerService;
     }
 
     @GetMapping("/orders")
@@ -45,12 +41,13 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-    @PostMapping("/customer/orders")
+    @GetMapping("/user/orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<Order> getOrdersByCustomer(@AuthenticationPrincipal UserPrincipals userPrincipals){
+    public List<Order> getOrdersByUser(@AuthenticationPrincipal UserPrincipals userPrincipals){
 
         User user = userService.getCurrentlyLoggedUser(userPrincipals);
-        return orderService.getOrdersByCustomer(user.getCustomer());
+
+        return orderService.getOrdersByUser(user);
     }
 
     @GetMapping("/orders/order")
@@ -60,21 +57,31 @@ public class OrderController {
         return orderService.getOrderByOrderNumber(orderNumber);
     }
 
-    @PostMapping("/orders")
+    @PostMapping("/orders/save")
     @ResponseStatus(HttpStatus.CREATED)
     public boolean saveOrder(@RequestBody Customer customer,
                            @AuthenticationPrincipal UserPrincipals userPrincipals){
 
         User user = userService.getCurrentlyLoggedUser(userPrincipals);
 
-        Customer savedCustomer = customerRepository.save(customer);
-        user.setCustomer(customer);
-        savedCustomer.setUser(user);
-
-        userRepository.save(user);
-
         List<ShoppingCart> carts = shoppingCartService.getAllCartsByUser(user);
 
-        return orderService.saveOrder(savedCustomer, carts);
+        return orderService.saveOrder(user, customer, carts);
+    }
+
+    @DeleteMapping("/orders/{orderId}/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteById(@PathVariable("orderId") Long orderId,
+                           @AuthenticationPrincipal UserPrincipals userPrincipals){
+        Order detachedOrder = orderService.getOrderById(orderId);
+        customerService.deleteById(detachedOrder.getCustomer().getId());
+        orderService.deleteById(orderId);
+    }
+
+    @DeleteMapping("/orders/clear")
+    @ResponseStatus(HttpStatus.OK)
+    public void clearAllOrders(@AuthenticationPrincipal UserPrincipals userPrincipals){
+        orderService.clearAllOrders();
+        customerService.clearAllCustomers();
     }
 }

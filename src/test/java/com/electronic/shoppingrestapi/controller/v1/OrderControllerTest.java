@@ -17,16 +17,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.electronic.shoppingrestapi.controller.v1.AbstractRestController.asJsonString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -87,18 +84,17 @@ public class OrderControllerTest {
         order2.setId(2L);
 
         customer.setOrders(Arrays.asList(order1, order2));
-        user.setCustomer(customer);
 
         List<Order> ordersByCustomer = customer.getOrders();
 
         when(userService.getCurrentlyLoggedUser(any())).thenReturn(user);
-        when(orderService.getOrdersByCustomer(any())).thenReturn(ordersByCustomer);
+        when(orderService.getOrdersByUser(any())).thenReturn(ordersByCustomer);
 
         mockMvc.perform(get("/api/v1/customer/orders")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(orderService, times(1)).getOrdersByCustomer(any());
+        verify(orderService, times(1)).getOrdersByUser(any());
     }
 
     @Test
@@ -141,7 +137,7 @@ public class OrderControllerTest {
         when(userService.getCurrentlyLoggedUser(any())).thenReturn(user);
         when(customerRepository.save(any())).thenReturn(customer);
         when(cartService.getAllCartsByUser(any())).thenReturn(carts);
-        when(orderService.saveOrder(any(), anyList())).thenReturn(true);
+        when(orderService.saveOrder(any(), any(), anyList())).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +152,7 @@ public class OrderControllerTest {
         verify(customerRepository, times(1)).save(any());
         verify(userRepository, times(1)).save(any());
         verify(cartService, times(1)).getAllCartsByUser(any());
-        verify(orderService, times(1)).saveOrder(any(), anyList());
+        verify(orderService, times(1)).saveOrder(any(), any(), anyList());
 
     }
 }

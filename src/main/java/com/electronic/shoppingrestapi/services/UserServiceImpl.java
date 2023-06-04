@@ -1,11 +1,14 @@
 package com.electronic.shoppingrestapi.services;
 
 import com.electronic.shoppingrestapi.auth.UserPrincipals;
+import com.electronic.shoppingrestapi.domain.Privilege;
 import com.electronic.shoppingrestapi.domain.Role;
 import com.electronic.shoppingrestapi.domain.User;
 import com.electronic.shoppingrestapi.repositories.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.time.LocalDate;
@@ -65,6 +68,22 @@ public class UserServiceImpl implements UserService {
 
         assert userPrincipal != null;
         return userPrincipal.getUser();
+    }
+
+    public static User filterUserObject(User user){
+
+        User newUser = new User();
+        newUser.setId(user.getId());
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
+        newUser.setPhoneNumber(user.getPhoneNumber());
+        newUser.setUserName(user.getUserName());
+        newUser.setPassword(user.getPassword());
+        newUser.setRoles(user.getRoles());
+        newUser.setRegDate(user.getRegDate());
+
+        return newUser;
     }
 
     @Override

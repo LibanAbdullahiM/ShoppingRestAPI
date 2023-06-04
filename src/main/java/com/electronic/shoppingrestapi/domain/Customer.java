@@ -4,16 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -25,13 +23,8 @@ public class Customer extends Person {
     private String country;
     private int zipcode;
 
-    @OneToOne
-    @JsonIgnoreProperties("customer")
-    private User user;
-
     @OneToMany(mappedBy = "customer")
     @JsonIgnoreProperties("customer")
-    @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
 
     @Override
@@ -47,13 +40,13 @@ public class Customer extends Person {
         return getClass().hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
-                ", zipcode=" + zipcode +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Customer{" +
+//                "address='" + address + '\'' +
+//                ", city='" + city + '\'' +
+//                ", country='" + country + '\'' +
+//                ", zipcode=" + zipcode +
+//                '}';
+//    }
 }
