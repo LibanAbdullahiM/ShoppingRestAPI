@@ -19,7 +19,9 @@ public interface OrderService {
 
     boolean saveOrder(User user, Customer customer, List<ShoppingCart> shoppingCartList);
 
-    void deleteById(Long id);
+    boolean changeStatus(Long orderId, String status);
+
+    void deleteOrder(Long id, User user);
 
     void clearAllOrders();
 }

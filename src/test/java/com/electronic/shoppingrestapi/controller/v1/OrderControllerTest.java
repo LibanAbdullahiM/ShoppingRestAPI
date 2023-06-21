@@ -4,7 +4,6 @@ import com.electronic.shoppingrestapi.domain.Customer;
 import com.electronic.shoppingrestapi.domain.Order;
 import com.electronic.shoppingrestapi.domain.ShoppingCart;
 import com.electronic.shoppingrestapi.domain.User;
-import com.electronic.shoppingrestapi.enums.OrderStatus;
 import com.electronic.shoppingrestapi.repositories.CustomerRepository;
 import com.electronic.shoppingrestapi.repositories.UserRepository;
 import com.electronic.shoppingrestapi.services.OrderService;
@@ -130,7 +129,7 @@ public class OrderControllerTest {
 
         Order order = new Order();
         order.setId(1L);
-        order.setOrderStatus(OrderStatus.NEW);
+        order.setOrderStatus("NEW");
         order.setOrderNumber("123456789");
        order.setCustomer(customer);
 
@@ -146,7 +145,7 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.id", equalTo(1)))
                 .andExpect(jsonPath("$.orderNumber", equalTo(order.getOrderNumber())))
                 .andExpect(jsonPath("$.dateOrdered", equalTo(order.getDateOrdered())))
-                .andExpect(jsonPath("$.orderStatus", equalTo(OrderStatus.NEW.toString())));
+                .andExpect(jsonPath("$.orderStatus", equalTo("NEW")));
 
         verify(userService, times(1)).getCurrentlyLoggedUser(any());
         verify(customerRepository, times(1)).save(any());

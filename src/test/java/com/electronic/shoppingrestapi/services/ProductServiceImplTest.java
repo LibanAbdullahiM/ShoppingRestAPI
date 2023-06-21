@@ -1,6 +1,8 @@
 package com.electronic.shoppingrestapi.services;
 
 import com.electronic.shoppingrestapi.domain.Product;
+import com.electronic.shoppingrestapi.repositories.CategoryRepository;
+import com.electronic.shoppingrestapi.repositories.ImageRepository;
 import com.electronic.shoppingrestapi.repositories.ProductRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +23,17 @@ public class ProductServiceImplTest {
     @Mock
     ProductRepository productRepository;
 
+    @Mock
+    CategoryRepository categoryRepository;
+
+    @Mock
+    ImageRepository imageRepository;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        productService = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository, categoryRepository, imageRepository);
     }
 
     @Test

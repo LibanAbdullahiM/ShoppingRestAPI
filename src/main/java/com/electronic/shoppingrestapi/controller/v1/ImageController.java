@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,10 +38,11 @@ public class ImageController {
     }
 
     @PostMapping("/products/{productId}/uploadImage")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void uploadProductImage(@PathVariable Long productId,
+    public boolean uploadProductImage(@PathVariable Long productId,
                                    @RequestBody MultipartFile file){
-        imageService.uploadProductImage(productId, file);
+        return imageService.uploadProductImage(productId, file);
     }
 
     @GetMapping("/products/{productId}/images/{imageIndex}")
@@ -63,10 +65,11 @@ public class ImageController {
 
 
     @PostMapping("/categories/{id}/uploadImage")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public void uploadCategoryImage(@PathVariable("id") Long id,
-                                    @RequestBody MultipartFile file){
-        imageService.uploadCategoryImage(id, file);
+    public boolean uploadCategoryImage(@PathVariable("id") Long id,
+                                    @RequestBody MultipartFile file) {
+        return imageService.uploadCategoryImage(id, file);
     }
 
     @GetMapping("/categories/{id}/image")

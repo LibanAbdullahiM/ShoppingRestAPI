@@ -4,9 +4,12 @@ import com.electronic.shoppingrestapi.domain.Category;
 import com.electronic.shoppingrestapi.domain.Product;
 import com.electronic.shoppingrestapi.services.CategoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.electronic.shoppingrestapi.services.CategoryServiceImpl.getFiltredCategory;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -29,7 +32,7 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     public Category getCategoryById(@PathVariable Long id){
 
-        return categoryService.getCategoryById(id);
+        return getFiltredCategory(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/{id}/products")
@@ -40,6 +43,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Category create(@RequestBody Category category){
 
@@ -47,14 +51,16 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/products/new")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Product createProductByCategory(@PathVariable Long id,
                                            @RequestBody Product product){
-
+        System.out.println(product);
         return categoryService.createProductByCategory(id, product);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public Category update(@PathVariable Long id,
                            @RequestBody Category category){
@@ -62,6 +68,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable Long id){
         categoryService.deleteById(id);

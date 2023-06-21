@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void uploadProductImage(Long productId, MultipartFile file) {
+    public boolean uploadProductImage(Long productId, MultipartFile file) {
 
         Optional<Product> productOptional = productRepository.findById(productId);
 
@@ -50,20 +50,21 @@ public class ImageServiceImpl implements ImageService {
 
         image.setImage(fileByteObject);
 
-        Image savedImage = imageRepository.save(image);
-
-        savedImage.setProduct(product);
-        product.getImages().add(savedImage);
+        image.setProduct(product);
+        product.getImages().add(image);
 
         //product.setImage(fileByteObject);
-
+        Image savedImage = imageRepository.save(image);
         productRepository.save(product);
+
+        assert savedImage != null;
+        return true;
 
 
     }
 
     @Override
-    public void uploadCategoryImage(Long categoryId, MultipartFile file) {
+    public boolean uploadCategoryImage(Long categoryId, MultipartFile file) {
 
             Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
 
@@ -77,7 +78,9 @@ public class ImageServiceImpl implements ImageService {
 
             category.setImage(fileByteObject);
 
-            categoryRepository.save(category);
+            Category savedCategory = categoryRepository.save(category);
+
+        return true;
 
     }
 

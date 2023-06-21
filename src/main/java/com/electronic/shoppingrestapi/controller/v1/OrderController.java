@@ -10,6 +10,7 @@ import com.electronic.shoppingrestapi.services.OrderService;
 import com.electronic.shoppingrestapi.services.ShoppingCartService;
 import com.electronic.shoppingrestapi.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public List<Order> getAllOrders(){
         return orderService.getAllOrders();
@@ -51,6 +53,7 @@ public class OrderController {
     }
 
     @GetMapping("/orders/order")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public Order getOrderByOrderNumber(@RequestBody String orderNumber){
 
@@ -69,16 +72,27 @@ public class OrderController {
         return orderService.saveOrder(user, customer, carts);
     }
 
+    @PutMapping("/orders/{orderId}/change-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public boolean changeOrderStatus(@PathVariable Long orderId,
+                                     @RequestBody String status){
+
+        return orderService.changeStatus(orderId, status);
+    }
+
     @DeleteMapping("/orders/{orderId}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteById(@PathVariable("orderId") Long orderId,
+    public void deleteOrder(@PathVariable("orderId") Long orderId,
                            @AuthenticationPrincipal UserPrincipals userPrincipals){
-        Order detachedOrder = orderService.getOrderById(orderId);
-        customerService.deleteById(detachedOrder.getCustomer().getId());
-        orderService.deleteById(orderId);
+
+        User user = userService.getCurrentlyLoggedUser(userPrincipals);
+
+        orderService.deleteOrder(orderId, user);
     }
 
     @DeleteMapping("/orders/clear")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void clearAllOrders(@AuthenticationPrincipal UserPrincipals userPrincipals){
         orderService.clearAllOrders();

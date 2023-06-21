@@ -3,6 +3,7 @@ package com.electronic.shoppingrestapi.controller.v1;
 import com.electronic.shoppingrestapi.domain.Product;
 import com.electronic.shoppingrestapi.services.ProductService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,23 +37,29 @@ public class ProductController {
     @PostMapping("/find")
     @ResponseStatus(HttpStatus.OK)
     public List<Product> findProducts(@RequestBody String str){
+	System.out.println(str);
         return productService.findProducts(str.toLowerCase());
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Product createNewProduct(@RequestBody Product product){
         return productService.createNewProduct(product);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{categoryId}/{productId}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public Product update(@PathVariable Long id,
+    public Product update(@PathVariable Long categoryId,
+                          @PathVariable Long productId,
                           @RequestBody Product product){
-        return productService.updateProduct(id, product);
+        product.setId(productId);
+        return productService.updateProduct(categoryId, product);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable Long id){
         productService.deleteById(id);

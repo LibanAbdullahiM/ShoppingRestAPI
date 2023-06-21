@@ -1,7 +1,6 @@
 package com.electronic.shoppingrestapi.services;
 
 import com.electronic.shoppingrestapi.domain.*;
-import com.electronic.shoppingrestapi.enums.OrderStatus;
 import com.electronic.shoppingrestapi.repositories.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
@@ -110,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setOrderNumber(orderNumber.toString());
-        order.setOrderStatus(OrderStatus.NEW);
+        order.setOrderStatus("NEW");
         order.setDateOrdered(LocalDate.now());
         order.setProducts(products);
         order.setQuantities(totalQuantity);
@@ -131,8 +130,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        orderRepository.deleteById(id);
+    public boolean changeStatus(Long orderId, String status) {
+        Order detachedOrder = orderRepository.findById(orderId).orElse(null);
+
+        assert detachedOrder != null;
+        detachedOrder.setOrderStatus(status.toUpperCase());
+        Order savedOrder = orderRepository.save(detachedOrder);
+        return savedOrder != null;
+    }
+
+    @Override
+    public void deleteOrder(Long orderId, User user) {
+
+        Order detachedOrder = orderRepository.findById(orderId).orElse(null);
+
+        assert detachedOrder != null;
+        Customer customer = detachedOrder.getCustomer();
+
+        user.getOrders().remove(detachedOrder);
+        customer.getOrders().remove(detachedOrder);
+
+        detachedOrder.setUser(null);
+        detachedOrder.setCustomer(null);
+
+        userRepository.save(user);
+        customerRepository.save(customer);
+        orderRepository.delete(detachedOrder);
     }
 
     @Override

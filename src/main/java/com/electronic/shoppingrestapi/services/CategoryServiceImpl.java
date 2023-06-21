@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.electronic.shoppingrestapi.services.ProductServiceImpl.getFilteredProduct;
 import static com.electronic.shoppingrestapi.services.ProductServiceImpl.getProducts;
 
 @Service
@@ -27,17 +28,11 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<Category> categoryList = categoryRepository.findAll();
 
-        Category category = null;
         List<Category> newList = new ArrayList<>();
 
         for(Category cat : categoryList){
 
-            category = new Category();
-
-            category.setId(cat.getId());
-            category.setName(cat.getName());
-
-            newList.add(category);
+            newList.add(getFiltredCategory(cat));
         }
 
         return newList;
@@ -48,13 +43,17 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category foundedCategory = categoryRepository.findById(id).orElse(null);
 
+        assert foundedCategory != null;
+        return foundedCategory;
+    }
+
+    public static Category getFiltredCategory(Category oldCategory){
         Category category = new Category();
 
-        assert foundedCategory != null;
-        category.setId(foundedCategory.getId());
-        category.setName(foundedCategory.getName());
+        category.setId(oldCategory.getId());
+        category.setName(oldCategory.getName());
 
-        return foundedCategory;
+        return category;
     }
 
     @Override
@@ -76,31 +75,46 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category create(Category category) {
 
-        return categoryRepository.save(category);
+        return getFiltredCategory(categoryRepository.save(category));
     }
 
     @Override
-    public Product createProductByCategory(Long id, Product product) {
+    public Product createProductByCategory(Long categoryId, Product product) {
 
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if(!optionalCategory.isPresent()){
-            throw new RuntimeException("Category with id " + id + " Not Found!");
+            throw new RuntimeException("Category with id " + categoryId + " Not Found!");
         }
         Category category = optionalCategory.get();
 
         category.getProducts().add(product);
         product.setCategory(category);
 
-        categoryRepository.save(category);
-
-        return product;
+        Category savedCategory = categoryRepository.save(category);
+        Optional<Product> optionalProduct = savedCategory.getProducts()
+                .stream()
+                .filter(prod -> prod.getName().equals(product.getName()))
+                .filter(prod -> prod.getDescription().equals(product.getDescription()))
+                .filter(prod -> prod.getBrand().equals(product.getBrand()))
+                .findFirst();
+        Product savedProduct = null;
+        if(optionalProduct.isPresent()){
+            savedProduct = optionalProduct.get();
+        }
+        assert savedProduct != null;
+        return getFilteredProduct(savedProduct);
     }
 
     @Override
     public Category update(Long id, Category category) {
-        category.setId(id);
-        Category savedCategory = categoryRepository.save(category);
-        return savedCategory;
+
+        Category detachedCategory = categoryRepository.findById(id).orElse(null);
+
+        assert detachedCategory != null;
+        detachedCategory.setName(category.getName());
+
+        Category savedCategory = categoryRepository.save(detachedCategory);
+        return getFiltredCategory(savedCategory);
     }
 
     @Override

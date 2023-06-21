@@ -1,6 +1,5 @@
 package com.electronic.shoppingrestapi.domain;
 
-import com.electronic.shoppingrestapi.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -28,8 +27,7 @@ public class Order extends BaseEntity{
     private float totalPrice;
 
     @Column(name = "status")
-    @Enumerated(value = EnumType.STRING)
-    private OrderStatus orderStatus;
+    private String orderStatus;
 
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
